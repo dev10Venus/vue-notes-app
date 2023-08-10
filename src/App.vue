@@ -4,11 +4,16 @@ import { ref } from 'vue'
 const showModal = ref(false)
 const newNote = ref('')
 const notes = ref([])
+const errorMessage = ref('')
 const getRandomColor = () =>{
   let color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
   return color;
 }
 const addNote = () => {
+  if(newNote.value.length<10){
+    errorMessage.value = 'Note must be at least 10 characters long';
+    return;
+  }
   notes.value.push({
     id: notes.value.length + 1,
     text: newNote.value,
@@ -17,10 +22,10 @@ const addNote = () => {
   });
   newNote.value = '';
   showModal.value = false;
+  errorMessage.value = '';
 }
 const clickShowModal = () => {
   showModal.value = true;
-  const note = document.querySelector('#note');
 
 }
 
@@ -29,7 +34,8 @@ const clickShowModal = () => {
   <main>
     <div v-if="showModal" class="overlay">
       <div class="modal">
-        <textarea name="note" v-model="newNote" id="note"  cols="30" rows="10"></textarea>
+        <textarea name="note" v-model.trim="newNote" id="note"  cols="30" rows="10"></textarea>
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         <button @click="addNote">Add Note</button>
         <button @click="showModal=false" class="close">Close</button>
       </div>
@@ -91,6 +97,11 @@ header button{
 .cards-container{
   display: flex;
   flex-wrap: wrap;
+}
+.error{
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 }
 .card{
   width: 225px;
